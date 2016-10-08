@@ -1,37 +1,57 @@
-let pay = document.querySelector('#pay')
-pay.addEventListener('click', startPayment)
+const PAGARME_ENCRYPTION_KEY = 'ek_test_AbngIR4MNh9AWQVAJg8qmBs627sPC1'
 
-function startPayment () {
+let pay = document
+  .querySelector('#pay')
+  .addEventListener('click', onPayClicked)
+
+const errorHandler = err => console.error('Uh oh, something bad happened.', err)
+
+function onPayClicked () {
   let supportedInstruments = [{
     supportedMethods: ['visa', 'mastercard']
   }]
 
-  var details = {
+  let details = {
     displayItems: [
       {
-        label: "Original donation amount",
-        amount: { currency: "USD", value : "85.00" } // US$65.00
+        label: 'Original subscription amount',
+        amount: { currency: 'BRL', value : '65.00' }
       },
       {
-        label: "Friends and family discount",
-        amount: { currency: "USD", value : "-10.00" } // -US$10.00
+        label: 'Friends and family discount',
+        amount: { currency: 'BRL', value : '-10.00' }
       }
     ],
     total:  {
-      label: "Total",
-      amount: { currency: "USD", value : "95.00" } // US$55.00
+      label: 'Total',
+      amount: { currency: 'BRL', value : '55.00' }
     }
   }
 
-  let request = new PaymentRequest(
-    supportedInstruments,
-    details
-  )
-
-  request
+  new PaymentRequest(supportedInstruments, details)
     .show()
-    .then(paymentResponse => {
-      paymentResponse.complete('success')
-    })
-    .catch(err => console.error('Uh oh, something bad happened', err.message))
+    .then(sendPaymentToServer)
+    .catch(errorHandler)
+}
+
+function sendPaymentToServer ({ details }) {
+  let payload = {
+    amount: 5500,
+    encryption_key: PAGARME_ENCRYPTION_KEY,
+    card_number: details.cardNumber,
+    card_holder_name: details.cardholderName,
+    card_cvv: details.cardSecurityCode,
+    card_expiration_date: details.expiryMonth + details.expiryYear.substr(2, 2),
+  }
+
+  fetch('https://api.pagar.me/1/transactions', {
+    method: 'POST',
+    headers: new Headers({
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }),
+    body: JSON.stringify(payload)
+  })
+    .then(x => x.json())
+    .then(x => console.info(x))
 }
