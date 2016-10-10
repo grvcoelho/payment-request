@@ -35,14 +35,14 @@ function onPayClicked () {
     .catch(errorHandler)
 }
 
-function sendPaymentToServer ({ details }) {
+function sendPaymentToServer (payment) {
   let payload = {
     amount: 5500,
     encryption_key: PAGARME_ENCRYPTION_KEY,
-    card_number: details.cardNumber,
-    card_holder_name: details.cardholderName,
-    card_cvv: details.cardSecurityCode,
-    card_expiration_date: details.expiryMonth + details.expiryYear.substr(2, 2),
+    card_number: payment.details.cardNumber,
+    card_holder_name: payment.details.cardholderName,
+    card_cvv: payment.details.cardSecurityCode,
+    card_expiration_date: payment.details.expiryMonth + payment.details.expiryYear.substr(2, 2),
   }
 
   return fetch('https://api.pagar.me/1/transactions', {
@@ -53,8 +53,10 @@ function sendPaymentToServer ({ details }) {
     }),
     body: JSON.stringify(payload)
   })
-    .then(x => x.json())
-    .then(() => payment.complete('success'))
+    .then(res => {
+      payment.complete('success')
+      return res.json()
+    })
     .catch(() => payment.complete('fail'))
 }
 
