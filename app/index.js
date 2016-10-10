@@ -31,6 +31,7 @@ function onPayClicked () {
   new PaymentRequest(supportedInstruments, details)
     .show()
     .then(sendPaymentToServer)
+    .then(finishPayment)
     .catch(errorHandler)
 }
 
@@ -44,14 +45,20 @@ function sendPaymentToServer ({ details }) {
     card_expiration_date: details.expiryMonth + details.expiryYear.substr(2, 2),
   }
 
-  fetch('https://api.pagar.me/1/transactions', {
+  return fetch('https://api.pagar.me/1/transactions', {
     method: 'POST',
     headers: new Headers({
-      'Accept': 'application/json',
+      'Access-Control-Allow-Origin': '*',
       'Content-Type': 'application/json'
     }),
     body: JSON.stringify(payload)
   })
     .then(x => x.json())
-    .then(x => console.info(x))
 }
+
+function finishPayment (paymentObject) {
+  let pre = document.querySelector('pre')
+
+  pre.innerHTML = JSON.stringify(paymentObject)
+}
+
