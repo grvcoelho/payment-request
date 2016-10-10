@@ -54,6 +54,8 @@ function sendPaymentToServer ({ details }) {
     body: JSON.stringify(payload)
   })
     .then(x => x.json())
+    .then(() => payment.complete('success'))
+    .catch(() => payment.complete('fail'))
 }
 
 function finishPayment (paymentObject) {
