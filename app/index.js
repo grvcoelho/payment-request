@@ -56,6 +56,7 @@ function paymentRequest (payment) {
     card_holder_name: payment.details.cardholderName,
     card_cvv: payment.details.cardSecurityCode,
     card_expiration_date: payment.details.expiryMonth + payment.details.expiryYear.substr(2, 2),
+    metadata: payment.details.billingAddress
   }
 
   return sendPayment(payload)
