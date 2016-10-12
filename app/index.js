@@ -1,10 +1,35 @@
 const PAGARME_ENCRYPTION_KEY = 'ek_test_m33wJhYA1QbnDbFCB759pvd6rGjs30'
 
-let pay = document
+let amount = 0
+const pay = document
   .querySelector('#pay')
   .addEventListener('click', onPayClicked)
 
+const slider = document
+	.querySelector('[type="range"]')
+   
+slider.addEventListener('input', (event) => onSlide(event.target.value))
+
+onSlide(slider.value)
+
 const errorHandler = err => console.error('Uh oh, something bad happened.', err)
+
+function onSlide (input) {
+  amount = input
+  document.querySelector('.total-value').textContent = formatCurrency(input) + 'R$'
+}
+
+function formatCurrency (number) {
+	return number.toString().split('').map((value, index, arr) => {
+	  return index === (arr.length - 2)? ',' + value : value
+  }).reverse().map((value, index, n) => {
+    if (index === 5) {
+      value = value + '.'
+	}
+	
+    return value
+  }).reverse().join('')
+}
 
 function onPayClicked () {
   const supportedInstruments = [{
@@ -14,19 +39,22 @@ function onPayClicked () {
   const details = {
     displayItems: [
       {
-        label: 'Original subscription amount',
-        amount: { currency: 'BRL', value : '65.00' }
+        label: 'Amount',
+        amount: { currency: 'BRL', value : amount }
       },
       {
-        label: 'Friends and family discount',
+        label: 'Discount',
         amount: { currency: 'BRL', value : '-10.00' }
       }
     ],
     total:  {
       label: 'Total',
-      amount: { currency: 'BRL', value : '55.00' }
-    }
+      amount: { currency: 'BRL', value : amount }
+    },
+	shippingOptions: []
   }
+
+  console.log(amount)
 
   if ('PaymentRequest' in window) {
     return new PaymentRequest(supportedInstruments, details)
@@ -42,15 +70,16 @@ function onPayClicked () {
   })
 
   const params = {
-    customerData: "false", amount: "10000", createToken: true, interestRate: 10, paymentMethods: 'credit_card'
+	  customerData: "false", amount: amount, createToken: true, interestRate: 10, paymentMethods: 'credit_card'
   }
 
   checkout.open(params)
 }
 
 function paymentRequest (payment) {
+  console.log(amount)
   let payload = {
-    amount: 5500,
+    amount: amount,
     encryption_key: PAGARME_ENCRYPTION_KEY,
     card_number: payment.details.cardNumber,
     card_holder_name: payment.details.cardholderName,

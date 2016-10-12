@@ -5,6 +5,150 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Aerospacial and Thermonuclear Club</title>
+  <style>
+    [type="range"] {
+		width: 100%;
+		-webkit-appearance: none;
+	    width: 100%;
+        background: transparent;
+	}
+
+	[type=range]::-webkit-slider-thumb {
+	  -webkit-appearance: none;
+	}
+
+	[type=range]:focus {
+	  outline: none;
+	}
+
+	[type=range]::-ms-track {
+	  width: 100%;
+	  cursor: pointer;
+	  background: transparent; 
+	  border-color: transparent;
+	  color: transparent;
+	}
+
+    /* Special styling for WebKit/Blink */
+	input[type=range]::-webkit-slider-thumb {
+	  -webkit-appearance: none;
+	  border: 1px solid #000000;
+	  height: 36px;
+	  width: 3em;
+	  border-radius: 3px;
+	  background: #ffffff;
+	  cursor: pointer;
+	  margin-top: -14px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+	  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d; /* Add cool effects to your sliders! */
+	}
+
+	/* All the same stuff for Firefox */
+	input[type=range]::-moz-range-thumb {
+	  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+	  border: 1px solid #000000;
+	  height: 36px;
+	  width: 16px;
+	  border-radius: 3px;
+	  background: #ffffff;
+	  cursor: pointer;
+	}
+
+	/* All the same stuff for IE */
+	input[type=range]::-ms-thumb {
+	  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+	  border: 1px solid #000000;
+	  height: 36px;
+	  width: 16px;
+	  border-radius: 3px;
+	  background: #ffffff;
+	  cursor: pointer;
+	}
+
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 8.4px;
+      cursor: pointer;
+      box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+      background: #3071a9;
+      border-radius: 1.3px;
+      border: 0.2px solid #010101;
+    }
+
+	input[type=range]:focus::-webkit-slider-runnable-track {
+	  background: #367ebd;
+	}
+
+	input[type=range]::-moz-range-track {
+	  width: 100%;
+	  height: 8.4px;
+	  cursor: pointer;
+	  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+	  background: #3071a9;
+	  border-radius: 1.3px;
+	  border: 0.2px solid #010101;
+	}
+
+	input[type=range]::-ms-track {
+	  width: 100%;
+	  height: 8.4px;
+	  cursor: pointer;
+	  background: transparent;
+	  border-color: transparent;
+	  border-width: 16px 0;
+	  color: transparent;
+	}
+	input[type=range]::-ms-fill-lower {
+	  background: #2a6495;
+	  border: 0.2px solid #010101;
+	  border-radius: 2.6px;
+	  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+	}
+	input[type=range]:focus::-ms-fill-lower {
+	  background: #3071a9;
+	}
+	input[type=range]::-ms-fill-upper {
+	  background: #3071a9;
+	  border: 0.2px solid #010101;
+	  border-radius: 2.6px;
+	  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+	}
+	input[type=range]:focus::-ms-fill-upper {
+	  background: #367ebd;
+	}
+
+	.total-value {
+	  text-align: center;
+	  font-size: 3em;
+	}
+
+	/* start da css for da buttons */
+	.btn {
+	  border-radius: 5px;
+	  padding: 15px 25px;
+	  font-size: 22px;
+	  text-decoration: none;
+	  margin: 20px;
+	  color: #fff;
+	  position: relative;
+	  display: inline-block;
+      border: 0;
+	}
+
+	.btn:active {
+	  transform: translate(0px, 5px);
+	  -webkit-transform: translate(0px, 5px);
+	  box-shadow: 0px 1px 0px 0px;
+	}
+
+	.green {
+	  background-color: #2ecc71;
+	  box-shadow: 0px 5px 0px 0px #15B358;
+	}
+
+	.green:hover {
+	  background-color: #48E68B;
+	}
+  </style>
 </head>
 <body>
   <div id="app">
@@ -12,9 +156,15 @@
     <p>Welcome to Aerospacial and Thermonuclear Club (c) 2020</p>
     <p>Here you can have access to rocket engines, uranium, hyperfuel and also orange juice.</p>
 
-    <button id="pay">Join</button>
+	<input type="range" min="1000" value="300000" max="1700000" />
 
-    <pre></pre>
+	<p>
+		<h2 class="total-value"></h2>
+	</p>
+
+	<div style="text-align: right;">
+      <button class="btn green" id="pay">Pagar</button>
+	</div>
   </div>
 
   <script src="https://assets.pagar.me/checkout/checkout.js"></script>
