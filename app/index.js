@@ -1,4 +1,4 @@
-const PAGARME_ENCRYPTION_KEY = 'ek_test_AbngIR4MNh9AWQVAJg8qmBs627sPC1'
+const PAGARME_ENCRYPTION_KEY = 'ek_test_m33wJhYA1QbnDbFCB759pvd6rGjs30'
 
 let pay = document
   .querySelector('#pay')
@@ -7,11 +7,11 @@ let pay = document
 const errorHandler = err => console.error('Uh oh, something bad happened.', err)
 
 function onPayClicked () {
-  let supportedInstruments = [{
+  const supportedInstruments = [{
     supportedMethods: ['visa', 'mastercard']
   }]
 
-  let details = {
+  const details = {
     displayItems: [
       {
         label: 'Original subscription amount',
@@ -28,14 +28,27 @@ function onPayClicked () {
     }
   }
 
-  new PaymentRequest(supportedInstruments, details)
-    .show()
-    .then(sendPaymentToServer)
-    .then(finishPayment)
-    .catch(errorHandler)
+  if ('PaymentRequest' in window) {
+    return new PaymentRequest(supportedInstruments, details)
+      .show()
+	  .then(paymentRequest)
+      .then(finishPayment)
+      .catch(errorHandler)
+  }
+
+  const checkout = new PagarMeCheckout.Checkout({
+    encryption_key: PAGARME_ENCRYPTION_KEY,
+    success: payment => sendFromPagarMeCheckout(payment)
+  })
+
+  const params = {
+    customerData: "false", amount: "10000", createToken: true, interestRate: 10, paymentMethods: 'credit_card'
+  }
+
+  checkout.open(params)
 }
 
-function sendPaymentToServer (payment) {
+function paymentRequest (payment) {
   let payload = {
     amount: 5500,
     encryption_key: PAGARME_ENCRYPTION_KEY,
@@ -45,6 +58,32 @@ function sendPaymentToServer (payment) {
     card_expiration_date: payment.details.expiryMonth + payment.details.expiryYear.substr(2, 2),
   }
 
+  return sendPayment(payload)
+	.then((response) => {
+		payment.complete('success')
+
+		return response
+	})
+}
+
+function sendFromPaymentRequestAPI (payment) {
+  return sendPayment(payload)
+	.then((response)=> {
+	  payment.complete('success')
+
+	  return response
+	})
+	.catch((cat) => {
+	  console.log('Failed PaymentRequestAPI', cat)
+	  payment.complete('fail')
+	})
+}
+
+function sendFromPagarMeCheckout (payload) {
+  return finishPayment(payload)
+}
+
+function sendPayment (payload) {
   return fetch('https://api.pagar.me/1/transactions', {
     method: 'POST',
     headers: new Headers({
@@ -53,16 +92,14 @@ function sendPaymentToServer (payment) {
     }),
     body: JSON.stringify(payload)
   })
-    .then(res => {
-      payment.complete('success')
-      return res.json()
-    })
-    .catch(() => payment.complete('fail'))
+  .then(res => {
+    return res.json()
+  })
 }
 
 function finishPayment (paymentObject) {
   let pre = document.querySelector('pre')
 
-  pre.innerHTML = JSON.stringify(paymentObject)
+  pre.innerHTML = JSON.stringify(paymentObject, 0, 2, 0)
 }
 
